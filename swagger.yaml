@@ -1,0 +1,1787 @@
+swagger: 2.0
+
+info:
+  version: '0.1.4'
+  title: Facestore API
+  description: |
+      This is a reference to Facestore API.
+
+      # Introduction
+      This API is documented in **OpenAPI format** and provided by [facestore.pt](http://facestore.pt) team.
+
+      # About the API
+      Through the Facestore API your applications can retrieve and manage Facestore platform content in your store.
+      The base address of the API is `https://api.facestore.pt`. There are several endpoints at that address, each with its own unique path.
+      All endpoints are private and you need the permissions to access them.
+      To get an API Token you have to be client of Facestore and access your personal account to request it (see the next topic).
+
+      # Get API Token
+      To consume the Facestore API is take the unique token to identify your requests. You can do that accessing the store manager admin and doing the following steps:
+      1. Go to ``configurations > API`` section.
+      2. Copy the unique token.
+
+      # Requests
+      The API is based on REST principles: data resources are accessed via standard HTTPS requests in UTF-8 format to an API endpoint. Where possible, the API strives to use appropriate HTTP verbs for each action:
+      | VERB     | DESCRIPTION                                            |
+      | -------- |:-------------:                                         |
+      | GET      | Used for retrieving resources.                         |
+      | POST     | Used for creating resources.                           |
+      | PUT      | Used for changing/replacing resources or collections.  |
+      | PATCH    | Used for changing/replacing partial resources.         |
+      | DELETE   | Used for deleting resources.                           |
+
+      # Responses
+      Response Status Codes
+      The API uses the following response status codes, as defined in the RFC 2616 and RFC 6585:
+
+      | STATUS CODE | DESCRIPTION                                                                                                                                                                                                                       |
+      |:-----------:|:---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+      | 200         | OK - The request has succeeded. The client can read the result of the request in the body and the headers of the response.                                                                                                        |
+      | 201         | Created - The request has been fulfilled and resulted in a new resource being created.                                                                                                                                            |
+      | 202         | Accepted - The request has been accepted for processing, but the processing has not been completed.                                                                                                                               |
+      | 204         | No Content - The request has succeeded but returns no message body.                                                                                                                                                               |
+      | 304         | Not Modified. See Conditional requests.                                                                                                                                                                                           |
+      | 400         | Bad Request - The request could not be understood by the server due to malformed syntax. The message body will contain more information; see Error Details.                                                                       |
+      | 401         | Unauthorized - The request requires user authentication or, if the request included authorization credentials, authorization has been refused for those credentials.                                                              |
+      | 403         | Forbidden - The server understood the request, but is refusing to fulfill it.                                                                                                                                                     |
+      | 404         | Not Found - The requested resource could not be found. This error can be due to a temporary or permanent condition.                                                                                                               |
+      | 429         | Too Many Requests - Rate limiting has been applied.                                                                                                                                                                               |
+      | 500         | Internal Server Error. You should never receive this error because our clever coders catch them all ... but if you are unlucky enough to get one, please report it to us through a comment at the bottom of this page.            |
+      | 502         | Bad Gateway - The server was acting as a gateway or proxy and received an invalid response from the upstream server.                                                                                                              |
+      | 503         | Service Unavailable - The server is currently unable to handle the request due to a temporary condition which will be alleviated after some delay. You can choose to resend the request again.                                    |
+
+      # Rate limiting
+      To make the API fast for everybody, rate limits apply.
+
+      Rate limiting is applied on an application basis (based on client id), regardless of how many users are using it.
+
+      If you get status code 429, it means that you have sent too many requests. If this happens, have a look in the Retry-After header, where you will see a number displayed. This is the amount of seconds that you need to wait, before you can retry sending your requests.
+
+      You can check the returned HTTP headers of any API request to see your current rate limit status:
+
+      ```
+      curl -i https://api.facestore.pt/v1/sample
+      HTTP/1.1 200 OK
+      Date: Mon, 01 Dec 2016 17:27:06 GMT
+      Status: 200 OK
+      X-RateLimit-Limit: 60
+      X-RateLimit-Remaining: 56
+      X-RateLimit-Reset: 1372700873
+      ```
+
+      The headers tell you everything you need to know about your current rate limit status:
+
+      | HEADER NAME           | DESCRIPTION                                                                     |
+      |:---------------------:|:-------------------------------------------------------------------------------:|
+      | X-RateLimit-Limit   | The maximum number of requests that the consumer is permitted to make per hour. |
+      | X-RateLimit-Remaining | The number of requests remaining in the current rate limit window.              |
+      | X-RateLimit-Reset   | The time at which the current rate limit window resets in UTC epoch seconds.    |
+
+      # Timestamps
+      Timestamps are returned in ISO 8601 format as Coordinated Universal Time (UTC) with zero offset: YYYY-MM-DDTHH:MM:SSZ. If the time is imprecise (for example, the date/time of an product is created), an additional field will show the precision; see for example, created_at in an product object.
+
+      # Error Details
+      The API uses the following format to describe unsuccessful responses, return information about the error as an error JSON object containing the following information::
+
+      | KEY         | VALUE TYPE   | VALUE DESCRIPTION |
+      |:-----------:|:------------:|:-----------------:|
+      | status_code | integer    | The HTTP status code (also returned in the response header; see Response Status Codes for more information). |
+      | message     | string     | A short description of the cause of the error. |
+
+  x-logo:
+    url: '../assets/logo.png'
+    backgroundColor: '#FFFFF'
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  contact:
+    name: Facestore API team
+    email: apihelp@facestore.pt
+    url: http://facestore.pt
+
+host: api.facestore.local
+
+basePath: /v1
+
+schemes:
+  - https
+
+consumes:
+  - application/json
+
+produces:
+  - application/json
+
+responses:
+  401:
+    description: Unauthorized
+  403:
+    description: Forbidden
+  406:
+    description: Not Acceptable
+  415:
+    description: Unsupported Media Type
+
+tags:
+  - name: brands
+    description: Everything about your Brands
+
+  - name: categories
+    description: Everything about your Categories
+
+  - name: customers
+    description: Everything about your Customers
+
+  - name: orders
+    description: Everything about your Orders
+
+  - name: payments
+    description: Everything about your Payments
+
+  - name: products
+    description: Everything about your Products
+
+  - name: products attributes
+    description: Everything about your Products Attributes
+
+  - name: shippings
+    description: Everything about your Shippings
+
+  - name: taxes
+    description: Everything about your Taxes
+
+paths:
+
+  /brands:
+    get:
+      tags:
+        - brands
+      description: |
+        Returns all brands from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `routes, products`
+      operationId: getBrands
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Category response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Brand'
+              meta:
+                $ref: '#/definitions/MetaPartialResponse'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    post:
+      tags:
+        - brands
+      description: Creates a new brand in the store.
+      operationId: addBrands
+      produces:
+        - application/json
+      parameters:
+        - name: brand
+          in: body
+          description: Brand to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Brand'
+      responses:
+        201:
+          description: Brand response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Brand'
+  /brands/{id}/:
+    get:
+      tags:
+        - brands
+      description: |
+        Returns a brand based on a single ID
+
+        ### Includes
+        You can give the following values on includea parameter: `routes, products`
+      operationId: getBrandById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - name: id
+          in: path
+          description: ID of brand to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Brand response
+          schema:
+            type: object
+            title: title
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Brand'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    delete:
+      tags:
+        - brands
+      description: Deletes a single brand based on the ID supplied
+      operationId: deleteBrandById
+      parameters:
+        - name: id
+          in: path
+          description: ID of brand to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Brand has been deleted
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    put:
+      tags:
+        - brands
+      description: Update a single brand based on the ID supplied
+      operationId: updateCategoryById
+      parameters:
+        - name: id
+          in: path
+          description: ID of brand to update
+          required: true
+          type: integer
+          format: int64
+        - name: brand
+          in: body
+          description: Brand to update in store
+          required: true
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Brand'
+      responses:
+        200:
+          description: Brand has been updated
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    patch:
+      tags:
+        - brands
+      description: Update a single brand based on the ID supplied
+      operationId: updateCategoryById
+      parameters:
+        - name: id
+          in: path
+          description: ID of brand to update
+          required: true
+          type: integer
+          format: int64
+        - name: brand
+          in: body
+          description: Brand to update in store
+          required: true
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Brand'
+      responses:
+        200:
+          description: Brand has been updated
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+  /categories:
+    get:
+      tags:
+        - categories
+      description: |
+        Returns all categories from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `routes, products`
+      operationId: getCategories
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Category response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Category'
+              meta:
+                type: object
+                properties:
+                  total:
+                    type: string
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    post:
+      tags:
+        - categories
+      description: Creates a new category in the store.
+      operationId: addCategories
+      produces:
+        - application/json
+      parameters:
+        - name: category
+          in: body
+          description: Category to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Category'
+      responses:
+        201:
+          description: Category response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Category'
+  /categories/{id}/:
+    get:
+      tags:
+        - categories
+      description: |
+        Returns a category based on a single ID
+
+        ### Includes
+        You can give the following values on includes parameter: `routes, products`
+      operationId: getCategoryById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - name: id
+          in: path
+          description: ID of category to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Category response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Category'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    delete:
+      tags:
+        - categories
+      description: deletes a single category based on the ID supplied
+      operationId: deleteCategoryById
+      parameters:
+        - name: id
+          in: path
+          description: ID of category to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Category has been deleted
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    put:
+      tags:
+        - categories
+      description: update a single category based on the ID supplied
+      operationId: updateCategoryById
+      parameters:
+        - name: id
+          in: path
+          description: ID of category to update
+          required: true
+          type: integer
+          format: int64
+        - name: category
+          in: body
+          description: Category to update in store
+          required: true
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/Category'
+      responses:
+        200:
+          description: Category has been updated
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+  /attributes:
+    get:
+      tags:
+        - products attributes
+      description: |
+        Returns all attributes of products from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `options`
+      operationId: getProductsAttributes
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: attributes response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Attribute'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+    post:
+      tags:
+        - products attributes
+      description: Creates a new attribute of products in the store.
+      operationId: addProductsAttributes
+      produces:
+        - application/json
+      parameters:
+        - name: attribute
+          in: body
+          description: Attribute to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Attribute'
+      responses:
+        201:
+          description: Attributes response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Attribute'
+  /attributes/{id}/:
+    get:
+      tags:
+        - products attributes
+      description: |
+        Returns a attribute of products based on a single ID
+
+        ### Includes
+        You can give the following values on includes parameter: `options`
+      operationId: getProductAttributeById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - name: id
+          in: path
+          description: ID of attribute to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Attributes response
+          schema:
+            $ref: '#/definitions/Attribute'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+    delete:
+      tags:
+        - products attributes
+      description: deletes a single attribute of products based on the ID supplied
+      operationId: deleteProductAttributeById
+      parameters:
+        - name: id
+          in: path
+          description: ID of attribute to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Tax has been deleted
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+    put:
+      tags:
+        - products attributes
+      description: update a single attribute of products based on the ID supplied
+      operationId: updateProductAttributeById
+      parameters:
+        - name: id
+          in: path
+          description: ID of attribute to update
+          required: true
+          type: integer
+          format: int64
+        - name: product attribute
+          in: body
+          description: Attribute to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Attribute'
+      responses:
+        200:
+          description: Attribute has been updated
+          schema:
+            $ref: '#/definitions/Attribute'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+
+  /customers:
+    get:
+      tags:
+        - customers
+      description: |
+        Returns all customers from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `orders, groups`
+      operationId: getCustomers
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Customer response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Customer'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+  /customers/{id}/:
+    get:
+      tags:
+        - customers
+      description: |
+        Returns all customers from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `orders, groups`
+      operationId: getCustomerById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - name: id
+          in: path
+          description: ID of customer
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Customer response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Customer'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+
+  /orders:
+    get:
+      tags:
+        - orders
+      description: |
+        Returns all orders from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `products, customers`
+      operationId: getOrders
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Orders response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+  /orders/{id}/:
+    get:
+      tags:
+        - orders
+      description: |
+        Returns all orders from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `products, customers`
+
+      operationId: getOrderById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - name: id
+          in: path
+          description: ID of customer
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Orders response
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Order'
+        404:
+          description: Resource not found
+          schema:
+            $ref: '#/definitions/NotFoundResponse'
+
+  /taxes:
+    get:
+      tags:
+        - taxes
+      description: Returns all taxes from the system that the user has access to
+      operationId: getTaxes
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      produces:
+        - application/json
+      responses:
+        200:
+          description: Taxes response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Tax'
+              meta:
+                type: object
+                properties:
+                  total:
+                    type: string
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    post:
+      tags:
+        - taxes
+      description: Creates a new tax in the store.
+      operationId: addTaxes
+      produces:
+        - application/json
+      parameters:
+        - name: tax
+          in: body
+          description: Tax to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Tax'
+      responses:
+        201:
+          description: Tax response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Tax'
+  /taxes/{id}/:
+    get:
+      tags:
+        - taxes
+      description: Returns a tax based on a single ID
+      operationId: getTaxById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - name: id
+          in: path
+          description: ID of tax to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Taxes response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Tax'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    delete:
+      tags:
+        - taxes
+      description: deletes a single tax based on the ID supplied
+      operationId: deleteTaxById
+      parameters:
+        - name: id
+          in: path
+          description: ID of tax to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Tax has been deleted
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    put:
+      tags:
+        - taxes
+      description: update a single tax based on the ID supplied
+      operationId: updateTaxById
+      parameters:
+        - name: id
+          in: path
+          description: ID of tax to update
+          required: true
+          type: integer
+          format: int64
+        - name: tax
+          in: body
+          description: Tax to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Tax'
+      responses:
+        200:
+          description: Taxes response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Tax'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    patch:
+      tags:
+        - taxes
+      description: update a single tax based on the ID supplied
+      operationId: updateTaxById
+      parameters:
+        - name: id
+          in: path
+          description: ID of tax to update
+          required: true
+          type: integer
+          format: int64
+        - name: tax
+          in: body
+          description: Tax to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Tax'
+      responses:
+        200:
+          description: Taxes response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Tax'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+  /shippings:
+    get:
+      tags:
+        - shippings
+      description: Returns all shippings from the system that the user has access to
+      operationId: getShippings
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Shippings response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Shipping'
+              meta:
+                type: object
+                properties:
+                  total:
+                    type: string
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    post:
+      tags:
+        - shippings
+      description: Creates a new shipping in the store.
+      operationId: addShipping
+      produces:
+        - application/json
+      parameters:
+        - name: shipping
+          in: body
+          description: Shipping to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Shipping'
+      responses:
+        201:
+          description: Shipping response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Shipping'
+  /shippings/{id}/:
+    get:
+      tags:
+        - shippings
+      description: Returns a shipping based on a single ID
+      operationId: getShippingById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - name: id
+          in: path
+          description: ID of shipping to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Shipping response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Shipping'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    delete:
+      tags:
+        - shippings
+      description: deletes a single shipping based on the ID supplied
+      operationId: deleteShippingById
+      parameters:
+        - name: id
+          in: path
+          description: ID of shipping to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Shipping has been deleted
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    put:
+      tags:
+        - shippings
+      description: update a single shipping based on the ID supplied
+      operationId: updateShippingById
+      parameters:
+        - name: id
+          in: path
+          description: ID of shipping to update
+          required: true
+          type: integer
+          format: int64
+        - name: tax
+          in: body
+          description: Shipping to update in store
+          required: true
+          schema:
+            $ref: '#/definitions/Shipping'
+      responses:
+        200:
+          description: Shipping response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Shipping'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    patch:
+      tags:
+        - shippings
+      description: update a single shipping based on the ID supplied
+      operationId: updateShippingById
+      parameters:
+        - name: id
+          in: path
+          description: ID of shipping to update
+          required: true
+          type: integer
+          format: int64
+        - name: tax
+          in: body
+          description: Shipping to update in store
+          required: true
+          schema:
+            $ref: '#/definitions/Shipping'
+      responses:
+        200:
+          description: Shipping response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Shipping'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+  /payments:
+    get:
+      tags:
+        - payments
+      description: |
+        Returns all payments from the system that the user has access to
+      operationId: getPayments
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Payments response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Payment'
+              meta:
+                type: object
+                properties:
+                  total:
+                    type: string
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+  /payments/{id}/:
+    get:
+      tags:
+        - payments
+      description: |
+        Returns all payments from the system that the user has access to
+      operationId: getPaymentById
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of payment
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Payment response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Payment'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+  /products:
+    get:
+      tags:
+        - products
+      description: |
+        Returns all products from the system that the user has access to
+
+        ### Includes
+        You can give the following values on includes parameter: `brands, categories, routes, stocks`
+      operationId: getProducts
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: './parameters/parameters.yaml#/orderByParam'
+      responses:
+        200:
+          description: Products response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Product'
+              meta:
+                type: object
+                properties:
+                  total:
+                    type: string
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    post:
+      tags:
+        - products
+      description: Creates a new product in the store.
+      operationId: addProduct
+      produces:
+        - application/json
+      parameters:
+        - name: product
+          in: body
+          description: Product to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        201:
+          description: Product response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Product'
+  /products/{id}/:
+    get:
+      tags:
+        - products
+      description: |
+        Returns a product based on a single ID
+
+        ### Includes
+        You can give the following values on includes parameter: `brands, categories, routes, stocks`
+      operationId: getProductById
+      produces:
+        - application/json
+      parameters:
+        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: './parameters/parameters.yaml#/limitParam'
+        - name: id
+          in: path
+          description: ID of product to fetch
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Product response
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Product'
+        404:
+          description: Resource not found
+          schema:
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    delete:
+      tags:
+        - products
+      description: deletes a single product based on the ID supplied
+      operationId: deleteProductById
+      parameters:
+        - name: id
+          in: path
+          description: ID of product to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        200:
+          description: Product has been deleted
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    put:
+      tags:
+        - products
+      description: update a single product based on the ID supplied
+      operationId: updateProductById
+      parameters:
+        - name: id
+          in: path
+          description: ID of product to update
+          required: true
+          type: integer
+          format: int64
+        - name: tax
+          in: body
+          description: Product to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        200:
+          description: Product has been updated
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+    patch:
+      tags:
+        - products
+      description: update a single product based on the ID supplied
+      operationId: updateProductById
+      parameters:
+        - name: id
+          in: path
+          description: ID of product to update
+          required: true
+          type: integer
+          format: int64
+        - name: tax
+          in: body
+          description: Product to add to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Product'
+      responses:
+        200:
+          description: Product has been updated
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+definitions:
+  Category:
+    type: object
+    properties:
+      id:
+        type: integer
+      position:
+        type: integer
+      image_small:
+        type: string
+        description: |
+          The file to be attached. Must be multipart/form-data. The maximum file size is 2 MB.
+      image_larger:
+        type: string
+        description: |
+          The file to be attached. Must be multipart/form-data. The maximum file size is 2 MB.
+      active:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+      visibility:
+        type: array
+        description: 'channels that resource are showed'
+        items:
+          type: string
+          enum:
+          - 'facebook'
+          - 'mobile'
+          - 'webstore'
+          - 'none'
+          - 'all'
+      i18n:
+        type: array
+        description: I18n fields to categories
+        items:
+          $ref: '#/definitions/I18n'
+    required:
+      - id
+
+  Brand:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      position:
+        type: integer
+        format: int64
+        example: 1
+      image_small:
+        type: string
+      image_larger:
+        type: string
+      active:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+      visibility:
+        type: array
+        description: 'channels that resource are showed'
+        items:
+          type: string
+          enum:
+          - 'facebook'
+          - 'mobile'
+          - 'webstore'
+          - 'none'
+          - 'all'
+      i18n:
+        type: array
+        description: I18n fields to brands
+        items:
+          $ref: '#/definitions/I18n'
+    required:
+      - id
+
+  Attribute:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      position:
+        type: integer
+        format: int64
+        example: 1
+      is_searchable:
+         type: boolean
+         example: true
+      active:
+        type: boolean
+        example: true
+      options:
+        description: Possible options of attribute
+        type: object
+        properties:
+          data:
+            $ref: '#/definitions/Options'
+      i18n:
+        $ref: '#/definitions/I18n'
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+    required:
+      - id
+
+  Options:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      position:
+         type: integer
+         format: int64
+         example: 1
+      aux_code:
+        type: string
+        example: M
+      i18n:
+        $ref: '#/definitions/I18n'
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+
+  Customer:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      firstname:
+        type: string
+        example: John
+      lastname:
+        type: string
+        example: Doe
+      active:
+        type: boolean
+        example: true
+      birhday:
+        type: string
+        format: 'date'
+        example: 2
+      vat:
+        type: integer
+        format: int64
+        example: 1234567890
+      email:
+        type: string
+        example: foobar@foo.com
+      phone:
+        type: string
+        format: int64
+        example: 912345678
+      company:
+        type: string
+      gender:
+        type: string
+      received_newsletter:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+    required:
+      - id
+
+  Order:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        example: John Doe
+      total:
+        type: double
+        example: 12.56
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+    required:
+      - id
+
+  Tax:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        example: Normal
+      is_default:
+        type: boolean
+        example: true
+      value:
+        type: double
+        example: 23
+      active:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+      updated_at:
+        type: string
+        format: 'date-time'
+    required:
+      - id
+
+  Shipping:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        example: DHL
+      image:
+        type: string
+        example: https://facestore.pt/storemanager/public/images/shipping/dhl.png
+      active:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+        example: 2012-07-12T15:09:43+00:00
+      updated_at:
+        type: string
+        format: 'date-time'
+        example: 2012-07-12T15:09:43+00:00
+    required:
+      - id
+
+  Payment:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      name:
+        type: string
+        example: PayPal
+      active:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+        example: 2012-08-22T16:05:27+00:00
+      updated_at:
+        type: string
+        format: 'date-time'
+        example: 2012-08-22T16:05:27+00:00
+    required:
+      - id
+
+  Product:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      sku:
+        type: string
+        example: a123b
+      manual:
+        type: string
+        example: Lorem Ipsum dolus
+      url_video:
+        type: string
+        example: http://youtube.com/foobar/qwocqpeibas2www
+      visibility:
+        type: array
+        description: 'channels that resource are showed'
+        items:
+          type: string
+          enum:
+          - 'facebook'
+          - 'mobile'
+          - 'webstore'
+          - 'none'
+          - 'all'
+      in_homepage:
+        type: boolean
+        example: true
+      is_prefered:
+        type: boolean
+        example: true
+      is_digital:
+        type: boolean
+        example: true
+      url_digital:
+        type: string
+        example: http://example.com
+      shipping_amount:
+        type: double
+        example: 0
+      shipping_multiples:
+        type: double
+        example: 0
+      is_new:
+        type: boolean
+        example: false
+      i18n:
+        $ref: '#/definitions/i18nProduct'
+      active:
+        type: boolean
+        example: true
+      created_at:
+        type: string
+        format: 'date-time'
+        example: '2016-10-10T13:26:17+00:00'
+      updated_at:
+        type: string
+        format: 'date-time'
+        example: '2016-10-10T13:26:17+00:00'
+      expires_at:
+        type: string
+        format: 'date-time'
+        example: '2016-10-10T13:26:17+00:00'
+    required:
+      - id
+
+  I18n:
+    type: object
+    properties:
+      locale:
+        type: string
+        example: 'pt_PT'
+      name:
+        type: string
+      description:
+        type: string
+    required:
+      - name
+      - locale
+
+  i18nProduct:
+    type: object
+    properties:
+      locale:
+        type: string
+        example: 'pt_PT'
+      name:
+        type: string
+      synopsis:
+        type: string
+      description:
+        type: string
+        example: Description of product
+      characteristics:
+        type: string
+        example: Characteristics of product
+      seo:
+        type: object
+        properties:
+          title:
+            type: string
+          keywords:
+            type: string
+          description:
+            type: string
+    required:
+      - locale
+      - name
+
+#Responses
+  DefaultResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      type:
+        type: string
+      message:
+        type: string
+  NotFoundResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        example: 404
+      message:
+        type: string
+        example: Resource not found.
+  MetaPartialResponse:
+    type: object
+    properties:
+      total:
+        type: Int
+      current_page:
+        type: Int
+        example: 1
+      first_page_url:
+        type: string
+        example: 'http://api.facestore.pt/v1/categories?order_by=id%2Cdesc&page=1'
+      from:
+        type: Int
+        example: 1
+      last_page:
+        type: Int
+        example: 4
+      last_page_url:
+        type: string
+        example: 'http://api.facestore.pt/v1/categories?order_by=id%2Cdesc&page=4'
+      next_page_url:
+        type: string
+        example: 'http://api.facestore.pt/v1/categories?order_by=id%2Cdesc&page=2'
+      path:
+        type: string
+        example: 'http://api.facestore.pt/v1/categories'
+      per_page:
+        type: Int
+        example: 5
+      prev_page_url:
+        type: string
+        example: null
+      to:
+        type: Int
+        example: 5
+
+securityDefinitions:
+  APIKeyHeader:
+    type: apiKey
+    in: header
+    name: APIToken
+
+security:
+  - APIKeyHeader: []

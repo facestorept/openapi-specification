@@ -1,0 +1,28 @@
+limitParam:
+  name: limit
+  in: query
+  description: max records to return
+  required: false
+  type: integer
+  format: int32
+includesParam:
+  name: includes
+  in: query
+  description: Include associated objects within response
+  required: false
+  type: array
+  items:
+    type: string
+  collectionFormat: csv
+orderByParam:
+  name: order_by
+  in: query
+  description: |
+    Specify the field to be sorted, examples:
+
+    - `?order_by=id|desc`
+    - `?order_by=updated_at|desc,position|asc`
+  required: false
+  type: array
+  items:
+    type: field|direction
