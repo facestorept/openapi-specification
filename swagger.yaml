@@ -1,4 +1,4 @@
-swagger: 2.0
+swagger: '2.0.0'
 
 info:
   version: '0.1.4'
@@ -99,7 +99,7 @@ info:
     email: apihelp@facestore.pt
     url: http://facestore.pt
 
-host: api.facestore.local
+host: api.facestore.pt
 
 basePath: /v1
 
@@ -108,6 +108,7 @@ schemes:
 
 consumes:
   - application/json
+  - multipart/form-data
 
 produces:
   - application/json
@@ -121,6 +122,23 @@ responses:
     description: Not Acceptable
   415:
     description: Unsupported Media Type
+  422:
+    description: Content body error
+    schema:
+      type: object
+      properties:
+        code:
+          type: integer
+          example:
+            422
+        message:
+          type: object
+          properties:
+            errors:
+              type: object
+              properties:
+                fields:
+                  type: array
 
 tags:
   - name: brands
@@ -165,9 +183,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Category response
@@ -194,6 +212,10 @@ paths:
       produces:
         - application/json
       parameters:
+        - in: formData
+          name: image_small
+          type: file
+          description: The file to upload.
         - name: brand
           in: body
           description: Brand to add to the store
@@ -210,6 +232,9 @@ paths:
                 type: array
                 items:
                   $ref: '#/definitions/Brand'
+        422:
+          $ref: '#/responses/422'
+
   /brands/{id}/:
     get:
       tags:
@@ -223,8 +248,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
         - name: id
           in: path
           description: ID of brand to fetch
@@ -261,19 +286,19 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        204:
           description: Brand has been deleted
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
     put:
       tags:
         - brands
       description: Update a single brand based on the ID supplied
-      operationId: updateCategoryById
+      operationId: updateBrandsById
       parameters:
         - name: id
           in: path
@@ -298,36 +323,6 @@ paths:
             type: array
             items:
               $ref: '#/definitions/NotFoundResponse'
-    patch:
-      tags:
-        - brands
-      description: Update a single brand based on the ID supplied
-      operationId: updateCategoryById
-      parameters:
-        - name: id
-          in: path
-          description: ID of brand to update
-          required: true
-          type: integer
-          format: int64
-        - name: brand
-          in: body
-          description: Brand to update in store
-          required: true
-          schema:
-            type: object
-            items:
-              $ref: '#/definitions/Brand'
-      responses:
-        200:
-          description: Brand has been updated
-        404:
-          description: Resource not found
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/NotFoundResponse'
-
   /categories:
     get:
       tags:
@@ -341,9 +336,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Category response
@@ -402,8 +397,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
         - name: id
           in: path
           description: ID of category to fetch
@@ -439,7 +434,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        204:
           description: Category has been deleted
         404:
           description: Resource not found
@@ -490,9 +485,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: attributes response
@@ -538,7 +533,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: '#/parameters/IncludesParam'
         - name: id
           in: path
           description: ID of attribute to fetch
@@ -567,7 +562,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        204:
           description: Tax has been deleted
         404:
           description: Resource not found
@@ -614,9 +609,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Customer response
@@ -641,7 +636,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: '#/parameters/IncludesParam'
         - name: id
           in: path
           description: ID of customer
@@ -673,9 +668,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Orders response
@@ -701,7 +696,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
+        - $ref: '#/parameters/IncludesParam'
         - name: id
           in: path
           description: ID of customer
@@ -727,9 +722,9 @@ paths:
       description: Returns all taxes from the system that the user has access to
       operationId: getTaxes
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       produces:
         - application/json
       responses:
@@ -786,7 +781,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: '#/parameters/IncludesParam'
         - name: id
           in: path
           description: ID of tax to fetch
@@ -822,7 +817,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        204:
           description: Tax has been deleted
         404:
           description: Resource not found
@@ -831,40 +826,6 @@ paths:
             items:
               $ref: '#/definitions/NotFoundResponse'
     put:
-      tags:
-        - taxes
-      description: update a single tax based on the ID supplied
-      operationId: updateTaxById
-      parameters:
-        - name: id
-          in: path
-          description: ID of tax to update
-          required: true
-          type: integer
-          format: int64
-        - name: tax
-          in: body
-          description: Tax to add to the store
-          required: true
-          schema:
-            $ref: '#/definitions/Tax'
-      responses:
-        200:
-          description: Taxes response
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Tax'
-        404:
-          description: Resource not found
-          schema:
-            type: object
-            items:
-              $ref: '#/definitions/NotFoundResponse'
-    patch:
       tags:
         - taxes
       description: update a single tax based on the ID supplied
@@ -908,9 +869,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Shippings response
@@ -965,7 +926,7 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: '#/parameters/IncludesParam'
         - name: id
           in: path
           description: ID of shipping to fetch
@@ -1001,7 +962,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        204:
           description: Shipping has been deleted
         404:
           description: Resource not found
@@ -1010,40 +971,6 @@ paths:
             items:
               $ref: '#/definitions/NotFoundResponse'
     put:
-      tags:
-        - shippings
-      description: update a single shipping based on the ID supplied
-      operationId: updateShippingById
-      parameters:
-        - name: id
-          in: path
-          description: ID of shipping to update
-          required: true
-          type: integer
-          format: int64
-        - name: tax
-          in: body
-          description: Shipping to update in store
-          required: true
-          schema:
-            $ref: '#/definitions/Shipping'
-      responses:
-        200:
-          description: Shipping response
-          schema:
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Shipping'
-        404:
-          description: Resource not found
-          schema:
-            type: object
-            items:
-              $ref: '#/definitions/NotFoundResponse'
-    patch:
       tags:
         - shippings
       description: update a single shipping based on the ID supplied
@@ -1088,9 +1015,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Payments response
@@ -1158,9 +1085,9 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
-        - $ref: './parameters/parameters.yaml#/orderByParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
+        - $ref: '#/parameters/OrderByParam'
       responses:
         200:
           description: Products response
@@ -1219,8 +1146,8 @@ paths:
       produces:
         - application/json
       parameters:
-        - $ref: './parameters/parameters.yaml#/includesParam'
-        - $ref: './parameters/parameters.yaml#/limitParam'
+        - $ref: '#/parameters/IncludesParam'
+        - $ref: '#/parameters/LimitParam'
         - name: id
           in: path
           description: ID of product to fetch
@@ -1256,7 +1183,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        204:
           description: Product has been deleted
         404:
           description: Resource not found
@@ -1720,6 +1647,7 @@ definitions:
       - locale
       - name
 
+
 #Responses
   DefaultResponse:
     type: object
@@ -1741,6 +1669,9 @@ definitions:
       message:
         type: string
         example: Resource not found.
+      status_code:
+        type: string
+        example: 404
   MetaPartialResponse:
     type: object
     properties:
@@ -1776,6 +1707,37 @@ definitions:
       to:
         type: Int
         example: 5
+
+
+parameters:
+  LimitParam:
+    name: limit
+    in: query
+    description: max records to return
+    required: false
+    type: integer
+    format: int32
+  IncludesParam:
+    name: includes
+    in: query
+    description: Include associated objects within response
+    required: false
+    type: array
+    items:
+      type: string
+    collectionFormat: csv
+  OrderByParam:
+    name: order_by
+    in: query
+    description: |
+      Specify the field to be sorted, examples:
+
+      - `?order_by=id|desc`
+      - `?order_by=updated_at|desc,position|asc`
+    required: false
+    type: array
+    items:
+      type: field
 
 securityDefinitions:
   APIKeyHeader:
