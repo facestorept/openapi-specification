@@ -323,12 +323,26 @@ paths:
 
   /brands/{id}/upload:
     post:
-      summary: 
-      operationId:
+      summary: Upload de images for brand
+      operationId: uploadImages
       parameters:
-        -
+        - name: image_small
+          in: formData
+          description: Small image for brand
+          type: object
+        - name: image_larger
+          in: formData
+          description: Larger image for brand
+          type: object
       responses:
-
+        200:
+          description: The images has been uploaded
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
 
   /categories:
     get:
