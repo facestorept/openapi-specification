@@ -211,11 +211,9 @@ paths:
       operationId: addBrands
       produces:
         - application/json
+      consumes:
+        - multipart/form-data
       parameters:
-        - in: formData
-          name: image_small
-          type: file
-          description: The file to upload.
         - name: brand
           in: body
           description: Brand to add to the store
@@ -261,7 +259,6 @@ paths:
           description: Brand response
           schema:
             type: object
-            title: title
             properties:
               data:
                 type: array
@@ -323,6 +320,16 @@ paths:
             type: array
             items:
               $ref: '#/definitions/NotFoundResponse'
+
+  /brands/{id}/upload:
+    post:
+      summary: 
+      operationId:
+      parameters:
+        -
+      responses:
+
+
   /categories:
     get:
       tags:
