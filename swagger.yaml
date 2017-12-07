@@ -211,8 +211,6 @@ paths:
       operationId: addBrands
       produces:
         - application/json
-      consumes:
-        - multipart/form-data
       parameters:
         - name: brand
           in: body
@@ -321,19 +319,29 @@ paths:
             items:
               $ref: '#/definitions/NotFoundResponse'
 
-  /brands/{id}/upload:
+  /brands/{id}/uploads/:
     post:
       summary: Upload de images for brand
       operationId: uploadImages
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
       parameters:
+        - name: id
+          in: path
+          description: ID of brand to update
+          required: true
+          type: integer
+          format: int64
         - name: image_small
           in: formData
           description: Small image for brand
-          type: object
-        - name: image_larger
+          type: file
+        - name: image_large
           in: formData
-          description: Larger image for brand
-          type: object
+          description: Large image for brand
+          type: file
       responses:
         200:
           description: The images has been uploaded
@@ -486,6 +494,39 @@ paths:
       responses:
         200:
           description: Category has been updated
+        404:
+          description: Resource not found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
+
+  /categories/{id}/uploads/:
+    post:
+      summary: Upload de images for category
+      operationId: uploadImages
+      consumes:
+        - multipart/form-data
+      produces:
+        - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of category to update
+          required: true
+          type: integer
+          format: int64
+        - name: image_small
+          in: formData
+          description: Small image for category
+          type: file
+        - name: image_large
+          in: formData
+          description: Large image for category
+          type: file
+      responses:
+        200:
+          description: The images has been uploaded
         404:
           description: Resource not found
           schema:
@@ -1376,7 +1417,10 @@ definitions:
           data:
             $ref: '#/definitions/Options'
       i18n:
-        $ref: '#/definitions/I18n'
+        type: array
+        description: I18n fields to brands
+        items:
+          $ref: '#/definitions/I18n'
       created_at:
         type: string
         format: 'date-time'
