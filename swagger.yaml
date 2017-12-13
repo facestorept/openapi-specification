@@ -552,15 +552,22 @@ paths:
         - $ref: '#/parameters/OrderByParam'
       responses:
         200:
-          description: attributes response
+          description: Attribute response
           schema:
-            type: array
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Attribute'
+              meta:
+                $ref: '#/definitions/MetaPartialResponse'
+        204:
+          description: No product attributes exist
+          schema:
+            type: object
             items:
-              $ref: '#/definitions/Attribute'
-        404:
-          description: Resource not found
-          schema:
-            $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
     post:
       tags:
         - products attributes
@@ -577,11 +584,17 @@ paths:
             $ref: '#/definitions/Attribute'
       responses:
         201:
-          description: Attributes response
+          description: Attribute response
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Attribute'
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Brand'
+        422:
+          $ref: '#/responses/422'
+
   /attributes/{id}/:
     get:
       tags:
@@ -604,13 +617,20 @@ paths:
           format: int64
       responses:
         200:
-          description: Attributes response
+          description: Attribute response
           schema:
-            $ref: '#/definitions/Attribute'
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Attribute'
         404:
           description: Resource not found
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
     delete:
       tags:
         - products attributes
@@ -624,12 +644,14 @@ paths:
           type: integer
           format: int64
       responses:
-        204:
-          description: Tax has been deleted
+        200:
+          description: Product Attribute has been deleted
         404:
           description: Resource not found
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
     put:
       tags:
         - products attributes
@@ -647,16 +669,18 @@ paths:
           description: Attribute to add to the store
           required: true
           schema:
-            $ref: '#/definitions/Attribute'
+            type: object
+            items:
+              $ref: '#/definitions/Attribute'
       responses:
         200:
           description: Attribute has been updated
-          schema:
-            $ref: '#/definitions/Attribute'
         404:
           description: Resource not found
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: array
+            items:
+              $ref: '#/definitions/NotFoundResponse'
 
   /customers:
     get:
