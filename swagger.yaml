@@ -465,7 +465,7 @@ paths:
           type: integer
           format: int64
       responses:
-        204:
+        200:
           description: Category has been deleted
         404:
           description: Resource not found
