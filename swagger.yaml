@@ -122,6 +122,8 @@ responses:
     description: Not Acceptable
   415:
     description: Unsupported Media Type
+  204:
+      description: No content found
   422:
     description: Content body error
     schema:
@@ -198,12 +200,12 @@ paths:
                   $ref: '#/definitions/Brand'
               meta:
                 $ref: '#/definitions/MetaPartialResponse'
-        404:
-          description: Resource not found
+        204:
+          description: No brands exist
           schema:
             type: object
             items:
-              $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
     post:
       tags:
         - brands
@@ -383,12 +385,12 @@ paths:
                 properties:
                   total:
                     type: string
-        404:
-          description: Resource not found
+        204:
+          description: No product attributes exist
           schema:
             type: object
             items:
-              $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
     post:
       tags:
         - categories
@@ -705,10 +707,12 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Customer'
-        404:
-          description: Resource not found
+        204:
+          description: No customers exist
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: object
+            items:
+              $ref: '#/responses/204'
   /customers/{id}/:
     get:
       tags:
@@ -764,10 +768,12 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Order'
-        404:
-          description: Resource not found
+        204:
+          description: No orders exist
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: object
+            items:
+              $ref: '#/responses/204'
   /orders/{id}/:
     get:
       tags:
@@ -828,12 +834,12 @@ paths:
                 properties:
                   total:
                     type: string
-        404:
-          description: Resource not found
+        204:
+          description: No product attributes exist
           schema:
             type: object
             items:
-              $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
     post:
       tags:
         - taxes
@@ -973,12 +979,12 @@ paths:
                 properties:
                   total:
                     type: string
-        404:
-          description: Resource not found
+        204:
+          description: No shipping exist
           schema:
             type: object
             items:
-              $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
     post:
       tags:
         - shippings
@@ -1119,12 +1125,12 @@ paths:
                 properties:
                   total:
                     type: string
-        404:
-          description: Resource not found
+        204:
+          description: No payments exist
           schema:
             type: object
             items:
-              $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
   /payments/{id}/:
     get:
       tags:
@@ -1189,12 +1195,12 @@ paths:
                 properties:
                   total:
                     type: string
-        404:
-          description: Resource not found
+        204:
+          description: No product exist
           schema:
             type: object
             items:
-              $ref: '#/definitions/NotFoundResponse'
+              $ref: '#/responses/204'
     post:
       tags:
         - products
