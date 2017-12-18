@@ -123,7 +123,22 @@ responses:
   415:
     description: Unsupported Media Type
   204:
-      description: No content found
+    description: No Content Exist
+    schema:
+      type: array
+      properties:
+        code:
+          type: integer
+          example:
+            422
+        message:
+          type: object
+          properties:
+            errors:
+              type: object
+              properties:
+                fields:
+                  type: array
   422:
     description: Content body error
     schema:
@@ -190,7 +205,7 @@ paths:
         - $ref: '#/parameters/OrderByParam'
       responses:
         200:
-          description: Category response
+          description: Brands response
           schema:
             type: object
             properties:
@@ -201,11 +216,7 @@ paths:
               meta:
                 $ref: '#/definitions/MetaPartialResponse'
         204:
-          description: No brands exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
     post:
       tags:
         - brands
@@ -283,7 +294,7 @@ paths:
           type: integer
           format: int64
       responses:
-        204:
+        200:
           description: Brand has been deleted
         404:
           description: Resource not found
@@ -317,7 +328,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
 
@@ -350,7 +361,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
 
@@ -386,11 +397,7 @@ paths:
                   total:
                     type: string
         204:
-          description: No product attributes exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
     post:
       tags:
         - categories
@@ -470,7 +477,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
     put:
@@ -499,7 +506,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
 
@@ -532,7 +539,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
 
@@ -565,11 +572,7 @@ paths:
               meta:
                 $ref: '#/definitions/MetaPartialResponse'
         204:
-          description: No product attributes exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
     post:
       tags:
         - products attributes
@@ -680,7 +683,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
 
@@ -708,11 +711,7 @@ paths:
             items:
               $ref: '#/definitions/Customer'
         204:
-          description: No customers exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
   /customers/{id}/:
     get:
       tags:
@@ -743,7 +742,9 @@ paths:
         404:
           description: Resource not found
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
 
   /orders:
     get:
@@ -769,11 +770,7 @@ paths:
             items:
               $ref: '#/definitions/Order'
         204:
-          description: No orders exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
   /orders/{id}/:
     get:
       tags:
@@ -805,7 +802,9 @@ paths:
         404:
           description: Resource not found
           schema:
-            $ref: '#/definitions/NotFoundResponse'
+            type: object
+            items:
+              $ref: '#/definitions/NotFoundResponse'
 
   /taxes:
     get:
@@ -835,11 +834,7 @@ paths:
                   total:
                     type: string
         204:
-          description: No product attributes exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
     post:
       tags:
         - taxes
@@ -909,7 +904,7 @@ paths:
           type: integer
           format: int64
       responses:
-        204:
+        200:
           description: Tax has been deleted
         404:
           description: Resource not found
@@ -980,11 +975,7 @@ paths:
                   total:
                     type: string
         204:
-          description: No shipping exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
     post:
       tags:
         - shippings
@@ -1054,7 +1045,7 @@ paths:
           type: integer
           format: int64
       responses:
-        204:
+        200:
           description: Shipping has been deleted
         404:
           description: Resource not found
@@ -1126,11 +1117,7 @@ paths:
                   total:
                     type: string
         204:
-          description: No payments exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
   /payments/{id}/:
     get:
       tags:
@@ -1196,11 +1183,7 @@ paths:
                   total:
                     type: string
         204:
-          description: No product exist
-          schema:
-            type: object
-            items:
-              $ref: '#/responses/204'
+          $ref: '#/responses/204'
     post:
       tags:
         - products
@@ -1275,12 +1258,12 @@ paths:
           type: integer
           format: int64
       responses:
-        204:
+        200:
           description: Product has been deleted
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
     put:
@@ -1307,7 +1290,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
     patch:
@@ -1334,7 +1317,7 @@ paths:
         404:
           description: Resource not found
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
 
