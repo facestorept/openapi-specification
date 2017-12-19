@@ -186,7 +186,6 @@ tags:
     description: Everything about your Taxes
 
 paths:
-
   /brands:
     get:
       tags:
@@ -335,7 +334,7 @@ paths:
       tags:
         - brands
       summary: Upload de images for brand
-      operationId: uploadBrandImages
+      operationId: uploadImages
       consumes:
         - multipart/form-data
       produces:
@@ -514,7 +513,7 @@ paths:
       tags:
         - categories
       summary: Upload de images for category
-      operationId: uploadCategoryImages
+      operationId: uploadImages
       consumes:
         - multipart/form-data
       produces:
@@ -1320,6 +1319,36 @@ paths:
             type: object
             items:
               $ref: '#/definitions/NotFoundResponse'
+  /products/{id}/uploads/:
+      post:
+        tags:
+          - products
+        summary: Upload de images for product
+        operationId: uploadImages
+        consumes:
+          - multipart/form-data
+        produces:
+          - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of product to update
+            required: true
+            type: integer
+            format: int64
+          - name: files
+            in: formData
+            description: File for product
+            type: file
+        responses:
+          200:
+            description: The images has been uploaded
+          404:
+            description: Resource not found
+            schema:
+              type: object
+              items:
+                $ref: '#/definitions/NotFoundResponse'
 
 definitions:
   Category:
@@ -1785,7 +1814,6 @@ definitions:
       to:
         type: Int
         example: 5
-
 
 parameters:
   LimitParam:
