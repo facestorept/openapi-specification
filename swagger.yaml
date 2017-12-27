@@ -648,7 +648,7 @@ paths:
           type: integer
           format: int64
       responses:
-        200:
+        200:  
           description: Product Attribute has been deleted
         404:
           description: Resource not found
@@ -695,7 +695,7 @@ paths:
 
         ### Includes
         You can give the following values on includes parameter: `orders, groups`
-      operationId: getCustomers
+      operationId: getCustomer
       produces:
         - application/json
       parameters:
@@ -706,11 +706,17 @@ paths:
         200:
           description: Customer response
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Customer'
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Customer'
+              meta:
+                $ref: '#/definitions/MetaPartialResponse'
         204:
           $ref: '#/responses/204'
+
   /customers/{id}/:
     get:
       tags:
@@ -735,9 +741,12 @@ paths:
         200:
           description: Customer response
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Customer'
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Customer'
         404:
           description: Resource not found
           schema:
